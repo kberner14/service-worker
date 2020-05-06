@@ -1,6 +1,6 @@
 {
-  "name": "service-worker",
-  "short_name": "service-worker",
+  "name": "budget-app",
+  "short_name": "budget-app",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

@@ -1,16 +1,15 @@
 const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./index.js",
-  "./manifest.json",
-  "./db.js",
-  "./public/icons/icon-192x192.png",
-  "./public/icons/icon-512x512.png",
-  "./style.css",
-  "https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+  "/",
+  "/db.js",
+  "/index.html",
+  "/index.js",
+  "/manifest.json",
+  "/style.css",
+  "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png"
 ];
 
-const CACHE_NAME = "static-cache-v1";
+const CACHE_NAME = "static-cache-v2";
 const DATA_CACHE_NAME = "data-cache-v1";
 
 self.addEventListener("install", (event) => {
@@ -42,34 +41,30 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.url.includes("/api/")) {
+  if (event.request.url.includes("/api/") && event.request.method === "GET") {
     event.respondWith(
       caches.open(DATA_CACHE_NAME).then(cache => {
         return fetch(event.request)
           .then(response => {
-            // If the response was good, clone it and store it in the cache.
-            if (response.status === 200) {
               cache.put(event.request.url, response.clone());
-            }
-
-            return response;
+              return response;
           })
-          .catch(err => {
-            // Network request failed, try to get it from the cache.
+          .catch(() => {
             return cache.match(event.request);
           });
       })
-        .catch(err => console.log(err))
+      .catch(err => console.log(err))
     );
-
     return;
   }
-
   event.respondWith(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.match(event.request).then(response => {
-        return response || fetch(event.request);
-      });
+    cache.match(event.request).then(response => {
+      return response || fetch(event.request);
     })
   );
 });
+
+
+
+
+
